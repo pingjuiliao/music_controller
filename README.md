@@ -32,3 +32,22 @@ django-admin startapp api
 django-admin startapp frontend
 ```
 
+the command that setup the frontend
+```
+# in frontend/
+npm init -y
+```
+
+install package
+```
+npm i webpack webpack-cli --save-dev 
+npm i @babel/core babel-loader @babel/preset-env @babel/preset-react --save-dev
+npm i react react-dom --save-dev
+# npm install @material-ui/core --legacy-peer-deps
+npm install @mui/material @emotion/react @emotion/styled
+# npm install @babel/plugin-proposal-class-properties
+npm install @babel/plugin-transform-class-properties
+npm install react-router-dom
+# npm install @material-ui/icons --legacy-peer-deps
+npm install @mui/icons-material
+```
