@@ -14,7 +14,7 @@ export default function Room() {
 
   const [showSettings, setShowSettings] = useState(false);
 
-
+  function getRoomDetails() {
   fetch("/api/get-room" + "?code=" + roomCode)
     .then((response) => {
       if (!response.ok) {
@@ -28,6 +28,8 @@ export default function Room() {
         isHost: data.is_host,
       });
   });
+  }
+  getRoomDetails();
 
   function leaveButtonPressed() {
     const requestOptions = {
@@ -58,7 +60,7 @@ export default function Room() {
       <CreateRoomPage update={true} votesToSkip={roomState.votesToSkip}
         guestCanPause={roomState.guestCanPause}
         roomCode={roomCode}
-        updateCallBack={null} />
+        updateCallBack={getRoomDetails} />
       <Grid item xs={12} align="center">
         <Button variant="contained" color="success" onClick={() => setShowSettings(false)}>
           Close

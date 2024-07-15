@@ -1,4 +1,5 @@
-import React, { Component, useState } from "react";
+import React from "react";
+import {Component, useState} from "react";
 import { render } from "react-dom";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -12,6 +13,7 @@ import { browserHistory } from "react-router";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import { Collapse } from "@mui/material";
+import Alert from '@mui/material/Alert';
 
 export default function CreateRoomPage({
   guestCanPause = true,
@@ -121,11 +123,17 @@ export default function CreateRoomPage({
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
-        <Typography component="h4" variant="h4">
           <Collapse in={errorMsg != "" || successMsg != ""}>
-            {successMsg}
+            {(successMsg != "")? (
+              <Alert severity="success"
+               onClose={() => {setSuccessMsg("")}}>
+              successMsg </Alert>
+            ): (
+              <Alert severity="error"
+               onClose={() => {setErrorMsg("")}}>
+              errorMsg</Alert>
+            )}
           </Collapse>
-        </Typography>
       </Grid>
       <Grid item xs={12} align="center">
         <Typography component="h4" variant="h4">
