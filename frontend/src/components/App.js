@@ -11,7 +11,7 @@ export default class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className="center">
         <HomePage />
       </div>
     );
@@ -19,4 +19,5 @@ export default class App extends Component {
 }
 
 const appDiv = document.getElementById("app")
-render(<App name="tim"/>, appDiv);
+render(<App />, appDiv);
+

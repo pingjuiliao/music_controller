@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import JsonResponse
 
 from .serializers import RoomSerializer, CreateRoomSerializer
 from .models import Room
@@ -12,6 +13,62 @@ from .models import Room
 class RoomView(generics.ListAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
+
+
+class GetRoom(APIView):
+    serializer_class = RoomSerializer
+    lookup_url_kwarg = 'code'
+
+    def get(self, request, format=None):
+        code = request.GET.get(self.lookup_url_kwarg)
+        if code is None:
+            return Response({'Bad Request': 'Code paramenter not found in request'})
+        room = Room.objects.filter(code=code)
+        if len(room) > 0:
+            data = RoomSerializer(room[0]).data
+            data['is_host'] = (self.request.session.
+                session_key == room[0].host)
+            return Response(data, status=status.HTTP_200_OK)
+        return Response({'Room Not Found': 'Invalid Room Code.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+
+class JoinRoom(APIView):
+    lookup_url_kwarg = 'code'
+
+    def post(self, request, format=None):
+        session_key = self.request.session.session_key
+        if not self.request.session.exists(session_key):
+            self.request.session.create()
+
+        code = request.data.get(self.lookup_url_kwarg)
+        if code is None:
+            return Response(
+                {'Bad Request':
+                 'Invalid post data, did not find a code key'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        room_result = Room.objects.filter(code=code)
+        if len(room_result) == 0:
+            return Response(
+                {'Bad Request': 'Invalid room code'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+        # Success, now join in
+        room = room_result[0]
+
+        # to tell this user is in the room
+        # this a temporary object
+        self.request.session['room_code'] = code
+
+        return Response(
+            {'message': 'Room Joined!'},
+            status=status.HTTP_200_OK
+        )
 
 # APIView will automatic dispatch views
 class CreateRoomView(APIView):
@@ -36,13 +93,27 @@ class CreateRoomView(APIView):
             room.guest_can_pause = guest_can_pause
             room.votes_to_skip = votes_to_skip
             room.save(update_fields=['guest_can_pause', 'votes_to_skip'])
+            self.request.session['room_code'] = room.code
             return Response(RoomSerializer(room).data,
                             status=status.HTTP_200_OK)
 
         room = Room(host=host, guest_can_pause=guest_can_pause,
-                        votes_to_skip=votes_to_skip)
+                    votes_to_skip=votes_to_skip)
         room.save()
         return Response(
             RoomSerializer(room).data,
             status=status.HTTP_201_CREATED
         )
+
+
+class UserInRoom(APIView):
+    def get(self, request, format=None):
+        session_key = self.request.session.session_key
+        if not self.request.session.exists(session_key):
+            self.request.session.create()
+
+        data = {
+            'code': self.request.session.get('room_code')
+        }
+        return JsonResponse(data,
+                            status=status.HTTP_200_OK)

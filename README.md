@@ -50,4 +50,5 @@ npm install @babel/plugin-transform-class-properties
 npm install react-router-dom
 # npm install @material-ui/icons --legacy-peer-deps
 npm install @mui/icons-material
+npm install --save-dev css-loader
 ```
