@@ -27,7 +27,7 @@ export default function HomePage() {
         if (response.ok) {
           navigate(`/room/${roomCode}`);
         } else {
-          setError({error: "Room not found"});
+          setError("Room not found");
         }
       }).catch((err) => {
         console.log(err);

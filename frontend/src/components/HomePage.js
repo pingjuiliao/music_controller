@@ -9,18 +9,25 @@ import {
   Routes,
   Route,
   Link,
-  Navigate
+  Navigate,
 } from "react-router-dom";
 
 export default function HomePage() {
   let [roomCode, setRoomCode] = useState(null);
+
   useEffect(() => {
     fetch('/api/user-in-room')
-      .then((response) => response.json())
+      .then((response) => {
+        return response.json();
+      })
       .then((data) => {
         setRoomCode(data.code);
       });
   });
+
+  function clearRoomCode() {
+    setRoomCode(null);
+  }
 
   function renderHomePage() {
     return (
