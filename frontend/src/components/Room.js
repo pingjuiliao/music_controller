@@ -1,6 +1,7 @@
 import React, { Component, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Grid, Button, Typography } from '@mui/material';
+import CreateRoomPage from "./CreateRoomPage";
 
 export default function Room() {
   const { roomCode } = useParams();
@@ -10,6 +11,9 @@ export default function Room() {
     guestCanPause: false,
     isHost: false,
   });
+
+  const [showSettings, setShowSettings] = useState(false);
+
 
   fetch("/api/get-room" + "?code=" + roomCode)
     .then((response) => {
@@ -37,6 +41,36 @@ export default function Room() {
     });
   }
 
+  function renderSettingsButton() {
+    return (
+      <Grid item xs={12} align="center">
+        <Button variant="contained" color="primary" onClick={() => setShowSettings(true)}>
+          Settings
+        </Button>
+      </Grid>
+    );
+  }
+
+  function renderSettings() {
+    return (
+    <Grid container spacing={1}>
+      <Grid item xs={12} align="center"></Grid>
+      <CreateRoomPage update={true} votesToSkip={roomState.votesToSkip}
+        guestCanPause={roomState.guestCanPause}
+        roomCode={roomCode}
+        updateCallBack={null} />
+      <Grid item xs={12} align="center">
+        <Button variant="contained" color="success" onClick={() => setShowSettings(false)}>
+          Close
+        </Button>
+      </Grid>
+    </Grid>
+    );
+  }
+
+  if (showSettings) {
+    return renderSettings();
+  }
 
   return (
     <Grid container spacing={1}>
@@ -60,6 +94,7 @@ export default function Room() {
            Host: {roomState.isHost.toString()}
         </Typography>
       </Grid>
+      {roomState.isHost? renderSettingsButton(): null}
       <Grid item xs={12} align="center">
         <Button variant="contained" color="success" onClick={leaveButtonPressed}>
           Leave Room
