@@ -51,5 +51,5 @@ npm install react-router-dom
 # npm install @material-ui/icons --legacy-peer-deps
 npm install @mui/icons-material
 npm install --save-dev css-loader
-npm install @mui/lab # for Alert
+# npm install @mui/lab # for Alert
 ```
